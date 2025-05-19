@@ -2,6 +2,7 @@ package application;
 	
 import javafx.application.Application;
 import javafx.stage.Stage;
+import utils.Configs;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.*;
@@ -13,7 +14,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Parent Root = FXMLLoader.load(getClass().getResource("/views/fxml/LoginForm.fxml"));
+			Parent Root = FXMLLoader.load(getClass().getResource(Configs.LOGIN_SCREEN_PATH));
 			Scene scene = new Scene(Root);
 			
 			primaryStage.setTitle("Chatbot RAG");
