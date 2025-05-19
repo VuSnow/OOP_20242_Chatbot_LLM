@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
+      <BorderPane prefHeight="200.0" prefWidth="550.0" BorderPane.alignment="CENTER">
+         <top>
+            <AnchorPane prefHeight="60.0" prefWidth="250.0" style="-fx-background-color: #e8e8e8;" BorderPane.alignment="CENTER">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="11.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../icons/robot-solid-black.png" />
+                     </image>
+                  </ImageView>
+                  <Text layoutX="63.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CHATBOT">
+                     <font>
+                        <Font name="Arial Bold" size="24.0" />
+                     </font>
+                  </Text>
+               </children>
+            </AnchorPane>
+         </top>
+         <center>
+            <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <ScrollPane prefHeight="703.0" prefWidth="950.0">
+                     <content>
+                        <VBox fx:id="chatContainer" prefHeight="700.0" prefWidth="946.0" />
+                     </content>
+                  </ScrollPane>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="inputMessage" prefHeight="70.0" prefWidth="841.0" />
+                        <Button fx:id="sendButton" mnemonicParsing="false" prefHeight="70.0" prefWidth="110.0" text="Send" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
+   </center>
+   <left>
+      <VBox prefHeight="800.0" prefWidth="250.0" BorderPane.alignment="CENTER">
+         <children>
+            <AnchorPane prefHeight="60.0" prefWidth="200.0" style="-fx-cursor: pointer;">
+               <children>
+                  <Button fx:id="newChat" layoutX="14.0" layoutY="16.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="105.0" text="New Chat">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../icons/pen-to-square-solid.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="search" layoutX="134.0" layoutY="17.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="105.0" text="Search">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../icons/magnifying-glass-solid.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+            </AnchorPane>
+            <ScrollPane prefHeight="680.0" prefWidth="250.0">
+               <content>
+                  <VBox prefHeight="680.0" prefWidth="235.0" />
+               </content>
+            </ScrollPane>
+            <AnchorPane prefHeight="60.0" prefWidth="200.0" style="-fx-border-color: #e8e8e8; -fx-border-width: 0px 2px 0px 0px;">
+               <children>
+                  <Text fx:id="fullName" layoutX="67.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Vũ Minh Dũng">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+                  <Button fx:id="viewProfile" layoutX="65.0" layoutY="30.0" mnemonicParsing="false" text="View Profile">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../icons/user-solid.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <AnchorPane layoutX="14.0" layoutY="5.0" prefHeight="50.0" prefWidth="50.0">
+                     <children>
+                        <ImageView fx:id="avatar" fitHeight="50.0" fitWidth="50.0" layoutX="10.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../images/avatar_test.jpg" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
+   </left>
+</BorderPane>
