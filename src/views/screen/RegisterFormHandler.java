@@ -7,7 +7,11 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import common.exception.AimsException;
+import common.exception.InvalidEmailFormatException;
+import common.exception.PasswordMismatchException;
+import common.exception.UsernameAlreadyExistsException;
 import entity.user.User;
+import entity.user.UserDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +27,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import service.user.UserService;
 import utils.Configs;
 
 public class RegisterFormHandler implements Initializable{
@@ -54,8 +59,18 @@ public class RegisterFormHandler implements Initializable{
 	@FXML
 	private Hyperlink login;
 	
+	private UserService userService;
+	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		
+		try {
+			this.userService = new UserService(new UserDAO());
+		} catch (SQLException e) {
+			showError("Cannot connect to database");
+            e.printStackTrace();
+            return;
+		}
 		// TODO Auto-generated method stub
 		registerButton.setOnAction(this::handleRegister);
 		login.setOnAction(this::loginForm);
@@ -70,33 +85,20 @@ public class RegisterFormHandler implements Initializable{
 		String enteredEmail = email.getText();
 		String enteredPhone = phone.getText();
 		
+		User newUser = new User(enteredUsername, enteredPassword, enteredEmail, enteredFullname, enteredPhone);
 		try {
-	        User userModel = new User(
-	            0, enteredUsername, enteredPassword, enteredEmail, enteredFullname, false
-	        );
-	        userModel.validateForSignup(enteredPassword, enteredConfirmPassword, enteredEmail);
-
-	        boolean success = userModel.createUser(
-	            enteredUsername, enteredPassword, enteredEmail, enteredFullname
-	        );
-
-	        if (success) {
-	            Parent loginRoot = FXMLLoader.load(
-	                Objects.requireNonNull(getClass().getResource(Configs.LOGIN_SCREEN_PATH))
-	            );
-	            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-	            stage.setScene(new Scene(loginRoot));
-	            stage.show();
-	        } else {
-	            warning.setText("Registration failed. Please try again.");
-	        }
-
-	    } catch (AimsException e) {
-	        warning.setText(e.getMessage());
-	    } catch (SQLException | IOException e) {
-	        e.printStackTrace();
-	        warning.setText("System error occurred. Please try again.");
-	    }
+			boolean success = this.userService.registerUser(newUser, enteredConfirmPassword);
+			if (success) {
+				this.navigateToLogin(event);
+			} else {
+				showError("Registration failed. Please try again.");
+			}
+		} catch (PasswordMismatchException | InvalidEmailFormatException | UsernameAlreadyExistsException e) {
+            showError(e.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Database error. Please try again.");
+        }
 	}
 	
 	private void loginForm(ActionEvent event) {
@@ -109,6 +111,23 @@ public class RegisterFormHandler implements Initializable{
             
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+	
+	private void showError(String message) {
+        warning.setText(message);
+        warning.setVisible(true);
+    }
+	
+	private void navigateToLogin(ActionEvent event) {
+        try {
+            Parent loginRoot = FXMLLoader.load(getClass().getResource(Configs.LOGIN_SCREEN_PATH));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(loginRoot));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Unable to load login screen.");
         }
     }
 
