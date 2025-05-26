@@ -78,7 +78,7 @@ public class LoginFormHandler implements Initializable {
             } else if (user.isBan()) {
                 showError("Your account has been banned");
             } else {
-                redirectToMainScreen(event);
+                redirectToMainScreen(event, user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -92,7 +92,7 @@ public class LoginFormHandler implements Initializable {
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(signupRoot));
             stage.show();
-        } catch (Exception e) {
+        } catch (Exception e) {	
             e.printStackTrace();
             showError("Cannot load registration screen");
         }
@@ -103,11 +103,16 @@ public class LoginFormHandler implements Initializable {
         stage.close();
     }
 
-    private void redirectToMainScreen(ActionEvent event) {
+    private void redirectToMainScreen(ActionEvent event, User currentUser) {
         try {
-            Parent mainScreen = FXMLLoader.load(getClass().getResource(Configs.MAIN_SCREEN_PATH));
+        	FXMLLoader loader = new FXMLLoader(getClass().getResource(Configs.MAIN_SCREEN_PATH));
+            Parent mainRoot = loader.load();
+
+            MainScreenHandler mainController = loader.getController();
+            mainController.initWithUser(currentUser);
+
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(mainScreen));
+            stage.setScene(new Scene(mainRoot));
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

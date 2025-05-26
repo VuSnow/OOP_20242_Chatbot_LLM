@@ -1,10 +1,89 @@
 package service.chat;
 
+import entity.conversation.*;
+import entity.message.*;
+import entity.conversation.Conversation;
+import entity.message.ChatMessage;
+//import util.LLMClient;
 import entity.user.User;
 
-public class ChatService {
-	
-	private User currentUser;
-	
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-} 
+import data.ConnectDatabase;
+
+public class ChatService {
+    private final ConversationDAO conversationDAO;
+    private final ChatMessageDAO messageDAO;
+//    private final LLMClient llmClient;
+    private final User currentUser;
+    private final Connection connection;
+
+    public ChatService(User currentUser) throws SQLException {
+        this.currentUser = currentUser;
+        this.conversationDAO = new ConversationDAO();
+        this.messageDAO = new ChatMessageDAO();
+        this.connection = ConnectDatabase.connect();
+//        this.llmClient = new LLMClient(); // mock
+    }
+
+    public boolean existsInDatabase(Conversation conversation) throws SQLException {
+        return conversationDAO.findById(conversation.getId()) != null;
+    }
+
+    public void createConversation(Conversation conversation) throws SQLException {
+        conversationDAO.insertConversation(conversation);
+    }
+    
+    public Conversation getConversationById(String conversationId) throws SQLException{
+    	return conversationDAO.findById(conversationId);
+    }
+
+    public ChatMessage sendUserMessage(Conversation conversation, String content) throws SQLException {
+        ChatMessage userMsg = new ChatMessage(
+            UUID.randomUUID().toString(),
+            conversation.getId(),
+            currentUser.getId(),
+            "user",
+            content,
+            LocalDateTime.now()
+        );
+        messageDAO.insertMessage(userMsg);
+        return userMsg;
+    }
+    
+    public void createMessage(ChatMessage message) throws SQLException{
+    	messageDAO.insertMessage(message);
+    }
+
+//    public ChatMessage fetchAssistantReply(Conversation conversation, ChatMessage userMsg) throws IOException, SQLException {
+//        String reply = llmClient.sendMessage(conversation.getId(), userMsg.getContent());
+//
+//        ChatMessage botMsg = new ChatMessage(
+//            UUID.randomUUID().toString(),
+//            conversation.getId(),
+//            0,
+//            "assistant",
+//            reply,
+//            LocalDateTime.now()
+//        );
+//        messageDAO.insertMessage(botMsg);
+//        return botMsg;
+//    }
+
+    public List<ChatMessage> loadMessagesForConversation(String conversationId) throws SQLException {
+        return messageDAO.findByConversationId(conversationId);
+    }
+
+    public List<Conversation> getConversationsForUser() throws SQLException {
+        return this.conversationDAO.findByUserId(this.currentUser.getId());
+    }
+    
+}

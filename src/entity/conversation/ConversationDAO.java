@@ -24,22 +24,20 @@ public class ConversationDAO {
         String title = rs.getString("title");
         LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
         LocalDateTime lastModifiedAt = rs.getTimestamp("last_modified_at").toLocalDateTime();
-        boolean isArchived = rs.getBoolean("is_archived");
 
         Conversation conv = new Conversation(id, userId, title, createdAt);
-        conv.setArchived(isArchived);
+        conv.setLastModifiedTime(lastModifiedAt);
         return conv;
     }
 	
 	public boolean insertConversation(Conversation conversation) throws SQLException{
-		String sql = "INSERT INTO conversation (id, user_id, title, create_at, last_modified_at, is_archieved) VALUES (?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO conversation (id, user_id, title, created_at, last_modified_at) VALUES (?, ?, ?, ?, ?)";
 		try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, conversation.getId());
             stmt.setInt(2, conversation.getUserId());
             stmt.setString(3, conversation.getTitle());
             stmt.setTimestamp(4, Timestamp.valueOf(conversation.getCreatedTime()));
             stmt.setTimestamp(5, Timestamp.valueOf(conversation.getLastModifiedTime()));
-            stmt.setBoolean(6, conversation.isArchived());
             return stmt.executeUpdate() > 0;
         }
 	}

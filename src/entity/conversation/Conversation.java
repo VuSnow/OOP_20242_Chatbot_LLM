@@ -13,20 +13,17 @@ public class Conversation {
     private LocalDateTime lastModifiedTime;
     private final int userId;
     private String title;
-    private final List<ChatMessage> messages;
-    private boolean isArchived;
-
+    
     public Conversation(String id, int userId, String title, LocalDateTime createdTime) {
         this.id = id;
         this.userId = userId;
         this.title = title;
         this.createdTime = createdTime;
         this.lastModifiedTime = createdTime;
-        this.messages = new ArrayList<>();
-        this.isArchived = false;
     }
 
-    // Getters
+
+	// Getters
     public String getId() {
         return id;
     }
@@ -47,34 +44,14 @@ public class Conversation {
         return title;
     }
 
-    public boolean isArchived() {
-        return isArchived;
-    }
-
-    public List<ChatMessage> getMessages() {
-        return Collections.unmodifiableList(messages);
-    }
 
     // Setters
     public void setTitle(String title) {
         this.title = title;
     }
-
-    public void setArchived(boolean archived) {
-        this.isArchived = archived;
+    
+    public void setLastModifiedTime(LocalDateTime lastModifiedTime) {
+    	this.lastModifiedTime = lastModifiedTime;
     }
 
-    // Business logic
-    public void addMessage(ChatMessage message) {
-        messages.add(message);
-        lastModifiedTime = LocalDateTime.now();
-    }
-
-    public boolean isEmpty() {
-        return messages.isEmpty();
-    }
-
-    public ChatMessage getLastMessage() {
-        return isEmpty() ? null : messages.get(messages.size() - 1);
-    }
 }

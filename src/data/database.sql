@@ -26,17 +26,21 @@ create table if not exists conversation(
     user_id INT NOT NULL,
     title VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_archived BOOLEAN DEFAULT FALSE
+    last_modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+--     is_archived BOOLEAN DEFAULT FALSE
 );
 
+-- Create 1 user to test function
+INSERT INTO "user" (id, username, password, email, fullname, phone, ban) VALUES
+(1, 'vusnow', 'Dung03062002?', 'adcarry1107@gmail.com', 'Vu Minh Dung', '0366032936', false);
+
 -- Create 5 conversations cách nhau 3 ngày
-INSERT INTO conversation (id, user_id, title, created_at, last_modified_at, is_archived) VALUES
-('conv-1', 1, 'Conversation One', NOW() - INTERVAL '12 days', NOW() - INTERVAL '12 days', false),
-('conv-2', 1, 'Conversation Two', NOW() - INTERVAL '9 days', NOW() - INTERVAL '9 days', false),
-('conv-3', 1, 'Conversation Three', NOW() - INTERVAL '6 days', NOW() - INTERVAL '6 days', false),
-('conv-4', 1, 'Conversation Four', NOW() - INTERVAL '3 days', NOW() - INTERVAL '3 days', false),
-('conv-5', 1, 'Conversation Five', NOW(), NOW(), false);
+INSERT INTO conversation (id, user_id, title, created_at, last_modified_at) VALUES
+('conv-1', 1, 'Conversation One', NOW() - INTERVAL '12 days', NOW() - INTERVAL '12 days'),
+('conv-2', 1, 'Conversation Two', NOW() - INTERVAL '9 days', NOW() - INTERVAL '9 days'),
+('conv-3', 1, 'Conversation Three', NOW() - INTERVAL '6 days', NOW() - INTERVAL '6 days'),
+('conv-4', 1, 'Conversation Four', NOW() - INTERVAL '3 days', NOW() - INTERVAL '3 days'),
+('conv-5', 1, 'Conversation Five', NOW(), NOW());
 
 -- conv-1: cách nhau 20-30s
 INSERT INTO message VALUES

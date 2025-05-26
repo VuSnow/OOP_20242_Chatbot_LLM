@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -28,6 +29,16 @@
                         <Font name="Arial Bold" size="24.0" />
                      </font>
                   </Text>
+                  <Button fx:id="logoutBtn" layoutX="823.0" layoutY="18.0" mnemonicParsing="false" prefWidth="105.0" text="Log out">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../icons/right-from-bracket-solid.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <ComboBox fx:id="modelSelector" layoutX="203.0" layoutY="18.0" prefWidth="150.0" />
                </children>
             </AnchorPane>
          </top>
@@ -36,7 +47,7 @@
                <children>
                   <ScrollPane prefHeight="703.0" prefWidth="950.0">
                      <content>
-                        <VBox fx:id="chatContainer" prefHeight="700.0" prefWidth="946.0" />
+                        <VBox fx:id="chatContainer" prefHeight="703.0" prefWidth="933.0" />
                      </content>
                   </ScrollPane>
                   <HBox prefHeight="100.0" prefWidth="200.0">
