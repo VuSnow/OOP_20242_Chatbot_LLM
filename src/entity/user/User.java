@@ -1,8 +1,5 @@
 package entity.user;
 
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

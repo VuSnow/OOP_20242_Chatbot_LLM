@@ -9,7 +9,7 @@ import entity.message.ChatMessage;
 
 public class LocalModel implements LLMClient{
 	@Override
-    public String generateResponse(String prompt, List<ChatMessage> context, Conversation conversation) {
+    public JSONObject generateResponse(String prompt, List<ChatMessage> context, Conversation conversation) {
         // Gọi API OpenAI GPT-4
 		System.out.println("Generate Response for Local Model");
         return null;

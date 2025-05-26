@@ -7,6 +7,6 @@ import entity.conversation.Conversation;
 import entity.message.ChatMessage;
 
 public interface LLMCaller {
-	String call(String prompt, List<ChatMessage> context, Conversation conversation);
+	JSONObject call(String prompt, List<ChatMessage> context, Conversation conversation);
 	JSONObject generateMsg(String prompt, List<ChatMessage> context, Conversation conversation);
 }

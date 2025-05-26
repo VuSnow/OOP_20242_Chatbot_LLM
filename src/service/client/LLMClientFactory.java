@@ -3,8 +3,8 @@ package service.client;
 public class LLMClientFactory {
 	public static LLMClient getClient(String modelName) {
 		switch(modelName.toLowerCase()) {
-			case "gpt-3.5":
-				return new GPT35Client();
+			case "gemini-2.0-flash":
+				return new GeminiClient();
 			case "gpt-4":
 				return new GPT4Client();
 			case "local model":

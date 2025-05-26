@@ -45,38 +45,10 @@ public class ChatService {
     public Conversation getConversationById(String conversationId) throws SQLException{
     	return conversationDAO.findById(conversationId);
     }
-
-    public ChatMessage sendUserMessage(Conversation conversation, String content) throws SQLException {
-        ChatMessage userMsg = new ChatMessage(
-            UUID.randomUUID().toString(),
-            conversation.getId(),
-            currentUser.getId(),
-            "user",
-            content,
-            LocalDateTime.now()
-        );
-        messageDAO.insertMessage(userMsg);
-        return userMsg;
-    }
     
     public void createMessage(ChatMessage message) throws SQLException{
     	messageDAO.insertMessage(message);
     }
-
-//    public ChatMessage fetchAssistantReply(Conversation conversation, ChatMessage userMsg) throws IOException, SQLException {
-//        String reply = llmClient.sendMessage(conversation.getId(), userMsg.getContent());
-//
-//        ChatMessage botMsg = new ChatMessage(
-//            UUID.randomUUID().toString(),
-//            conversation.getId(),
-//            0,
-//            "assistant",
-//            reply,
-//            LocalDateTime.now()
-//        );
-//        messageDAO.insertMessage(botMsg);
-//        return botMsg;
-//    }
 
     public List<ChatMessage> loadMessagesForConversation(String conversationId) throws SQLException {
         return messageDAO.findByConversationId(conversationId);
@@ -84,6 +56,10 @@ public class ChatService {
 
     public List<Conversation> getConversationsForUser() throws SQLException {
         return this.conversationDAO.findByUserId(this.currentUser.getId());
+    }
+    
+    public void updateModifiedTime(Conversation conversation) throws SQLException {
+    	this.conversationDAO.updateConversation(conversation);
     }
     
 }

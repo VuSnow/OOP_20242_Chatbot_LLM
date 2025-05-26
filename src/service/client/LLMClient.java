@@ -7,6 +7,6 @@ import entity.message.*;
 import org.json.*;
 
 public interface LLMClient {
-	String generateResponse(String prompt, List<ChatMessage> context, Conversation conversation);
+	JSONObject generateResponse(String prompt, List<ChatMessage> context, Conversation conversation);
 	String getModelName();
 }

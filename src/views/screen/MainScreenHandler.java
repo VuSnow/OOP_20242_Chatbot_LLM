@@ -5,6 +5,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
+
+import org.json.JSONObject;
+
 import java.time.LocalDateTime;
 
 import entity.conversation.Conversation;
@@ -12,6 +15,7 @@ import entity.message.ChatMessage;
 import entity.message.ChatMessageType;
 import entity.user.User;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -23,11 +27,13 @@ import javafx.event.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import service.chat.ChatService;
 import service.client.LLMClient;
 import service.client.LLMClientFactory;
+import utils.Configs;
 
 public class MainScreenHandler implements Initializable{
 	
@@ -66,6 +72,7 @@ public class MainScreenHandler implements Initializable{
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		newChat.setOnAction(this::handleNewChat);
+		logoutBtn.setOnAction(this::logout);
 		
 		// Disable nút gửi ban đầu
 		sendButton.setDisable(true);
@@ -76,14 +83,15 @@ public class MainScreenHandler implements Initializable{
 		
 		sendButton.setOnAction(this::sendMsg);
 		
-		modelSelector.getItems().addAll("GPT-3.5", "GPT-4", "Local Model");
-		modelSelector.setValue("GPT-3.5");
-		this.setModel("GPT-3.5");
+		modelSelector.getItems().addAll("Gemini-2.0-flash", "GPT-4", "Local Model");
+		modelSelector.setValue("Gemini-2.0-flash");
+		this.setModel("Gemini-2.0-flash");
 		modelSelector.setOnAction(event -> {
 			String selectedModel = modelSelector.getValue();
-			System.out.println(selectedModel);
+//			System.out.println(selectedModel);
 			this.setModel(selectedModel);
 		});
+		
 	}
 	
 	private void setModel(String modelName) {
@@ -100,7 +108,7 @@ public class MainScreenHandler implements Initializable{
 
 	private void handleNewChat(ActionEvent event) {
 		String conversationId = UUID.randomUUID().toString();
-		System.out.println(conversationId);
+//		System.out.println(conversationId);
 		this.conversation = new Conversation(
 			conversationId,
 			this.currentUser.getId(),
@@ -114,7 +122,6 @@ public class MainScreenHandler implements Initializable{
 	    this.currentUser = user;
 	    try {
 	        this.chatService = new ChatService(this.currentUser);
-//	        List<Conversation> conversations = this.chatService.getConversationsForUser();
 	        convHistory.getChildren().clear();
 	        this.loadHistory();
 	    } catch (SQLException e) {
@@ -145,32 +152,13 @@ public class MainScreenHandler implements Initializable{
 			this.conversation = this.chatService.getConversationById(conversationId);
 			
 			List<ChatMessage> messages = this.chatService.loadMessagesForConversation(conversationId);
-			System.out.println(messages);
+//			System.out.println(messages);
 			chatContainer.getChildren().clear();
 			
 			for (ChatMessage message : messages) {
-	            Label messageLabel = new Label(message.getContent());
-	            messageLabel.setWrapText(true);
-	            messageLabel.setMaxWidth(400);
-	            messageLabel.setPadding(new Insets(8));
-	            messageLabel.setStyle("-fx-background-radius: 10; -fx-border-radius: 10;");
-
-	            HBox wrapper = new HBox(messageLabel);
-	            wrapper.setPadding(new Insets(5));
-
-	            if ("assistant".equalsIgnoreCase(message.getSender())) {
-	                wrapper.setAlignment(Pos.CENTER_LEFT);
-	                messageLabel.setStyle(
-	                    "-fx-background-color: #F0F0F0; -fx-text-fill: black; -fx-background-radius: 10; -fx-padding: 8;"
-	                );
-	            } else {
-	                wrapper.setAlignment(Pos.CENTER_RIGHT);
-	                messageLabel.setStyle(
-	                    "-fx-background-color: #C8E4FF; -fx-text-fill: black; -fx-background-radius: 10; -fx-padding: 8;"
-	                );
-	            }
-	            
-	            chatContainer.getChildren().add(wrapper);
+	            boolean isUser = !"assistant".equalsIgnoreCase(message.getSender());
+	            HBox bubble = this.buildMessageBubble(message.getContent(), isUser);
+	            chatContainer.getChildren().add(bubble);
 	        }
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -180,7 +168,7 @@ public class MainScreenHandler implements Initializable{
 	private void sendMsg(ActionEvent event) {
 		// 1. Get user message
 		String msg = inputMessage.getText();
-		System.out.println(inputMessage.getText().trim());
+//		System.out.println(inputMessage.getText().trim());
 		
 		// 2. If the conversation is null, create new conversation
 		if (this.conversation == null) {
@@ -188,15 +176,7 @@ public class MainScreenHandler implements Initializable{
 		}
 		
 		// 3. Append user message to chatContainer (update UI)
-		Label userLabel = new Label(msg);
-		userLabel.setWrapText(true);
-		userLabel.setMaxWidth(400);
-		userLabel.setPadding(new Insets(8));
-	    userLabel.setStyle("-fx-background-color: #C8E4FF; -fx-background-radius: 10;");
-	    HBox wrapper = new HBox(userLabel);
-	    wrapper.setPadding(new Insets(5));
-	    wrapper.setAlignment(Pos.CENTER_RIGHT);
-	    chatContainer.getChildren().add(wrapper);
+	    chatContainer.getChildren().add(this.buildMessageBubble(msg, true));
 	    
 	    // 4. Clear inputMessage
 	    inputMessage.clear();
@@ -215,25 +195,72 @@ public class MainScreenHandler implements Initializable{
 	    	List<ChatMessage> context = this.chatService.loadMessagesForConversation(this.conversation.getId());
 	    	
 	    	// 8. Get the response from LLM Client
-	    	String response = llmClient.generateResponse(msg, context, this.conversation);
-	    	System.out.println(response);
+	    	JSONObject response = llmClient.generateResponse(msg, context, this.conversation);
+	    	String answer = response.getString("answer");
+	    	String title = response.getString("title");
+//	    	System.out.println(response);
 	    	
 	    	// 9. Append LLM Response to chatContainer (update UI)
-	        Label aiLabel = new Label(response);
-	        aiLabel.setWrapText(true);
-	        aiLabel.setMaxWidth(400);
-	        aiLabel.setPadding(new Insets(8));
-	        aiLabel.setStyle("-fx-background-color: #F0F0F0; -fx-background-radius: 10;");
-	        HBox aiWrapper = new HBox(aiLabel);
-	        aiWrapper.setPadding(new Insets(5));
-	        aiWrapper.setAlignment(Pos.CENTER_LEFT);
-	        chatContainer.getChildren().add(aiWrapper);
+	        chatContainer.getChildren().add(this.buildMessageBubble(answer, false));
 	        
 	        // 10. Save LLM Response to database
+	        ChatMessage AiMessage = new ChatMessage(this.conversation.getId(), 0, "assistant", answer ,LocalDateTime.now(), ChatMessageType.TEXT);
+	        this.chatService.createMessage(AiMessage);
 	        
+	        // 11. Update last modified time of this conversation
+	        this.conversation.setLastModifiedTime(AiMessage.getTimestamp());
+	        if (!title.equals(this.conversation.getTitle())) {
+	        	this.conversation.setTitle(title);
+	        }
+	        this.chatService.updateModifiedTime(this.conversation);
+	        
+	        // 12. Update UI
+	        convHistory.getChildren().clear();
+	        this.loadHistory();
 	    	
 	    } catch (SQLException e) {
 	    	e.printStackTrace();
+	    }
+	}
+	
+	private HBox buildMessageBubble(String content, boolean isUser) {
+		Label label = new Label(content);
+	    label.setWrapText(true);
+	    label.setMaxWidth(400);
+	    label.setMinHeight(Label.USE_PREF_SIZE);
+	    label.setTextOverrun(OverrunStyle.CLIP);
+	    label.setPadding(new Insets(8));
+	    label.setStyle(isUser ?
+	        "-fx-background-color: #C8E4FF; -fx-background-radius: 10;" :
+	        "-fx-background-color: #F0F0F0; -fx-background-radius: 10;"
+	    );
+
+	    HBox wrapper = new HBox(label);
+	    wrapper.setPadding(new Insets(5));
+	    wrapper.setAlignment(isUser ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
+	    return wrapper;
+	}
+	
+	private void logout(ActionEvent event) {
+		this.currentUser = null;
+	    this.chatService = null;
+	    this.conversation = null;
+	    this.llmClient = null;
+	    
+	    // Đóng màn hình hiện tại (MainScreen)
+	    Stage stage = (Stage) logoutBtn.getScene().getWindow();
+	    stage.close();
+	    
+	    // Load màn hình login (giả sử có file LoginScreen.fxml)
+	    try {
+	        FXMLLoader loader = new FXMLLoader(getClass().getResource(Configs.LOGIN_SCREEN_PATH));
+	        Parent root = loader.load();
+	        Stage loginStage = new Stage();
+	        loginStage.setScene(new Scene(root));
+	        loginStage.setTitle("Login");
+	        loginStage.show();
+	    } catch (Exception e) {
+	        e.printStackTrace();
 	    }
 	}
 }

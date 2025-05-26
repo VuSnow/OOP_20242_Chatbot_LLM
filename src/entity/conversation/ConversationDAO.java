@@ -67,14 +67,15 @@ public class ConversationDAO {
         return conversations;
     }
 	
-	public boolean updateTitle(String id, String newTitle) throws SQLException {
-        String sql = "UPDATE conversation SET title = ?, last_modified_at = CURRENT_TIMESTAMP WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, newTitle);
-            stmt.setString(2, id);
-            return stmt.executeUpdate() > 0;
-        }
-    }
+	public boolean updateConversation(Conversation conversation) throws SQLException{
+		String sql = "UPDATE conversation SET last_modified_at = ?, title = ? WHERE id = ?";
+		try (PreparedStatement stmt = connection.prepareStatement(sql)){
+			stmt.setTimestamp(1, Timestamp.valueOf(conversation.getLastModifiedTime()));
+			stmt.setString(2, conversation.getTitle());
+			stmt.setString(3, conversation.getId());
+			return stmt.executeUpdate() > 0;
+		}
+	}
 
     public boolean archive(String id) throws SQLException {
         String sql = "UPDATE conversation SET is_archived = TRUE, last_modified_at = CURRENT_TIMESTAMP WHERE id = ?";
