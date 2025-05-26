@@ -6,10 +6,13 @@ from generateTitle import generate_title
 from chat_request import ChatRequest
 from chat_message import ChatMessage
 from google import genai
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
 
 app = FastAPI()
-client = genai.Client(api_key="AIzaSyDUkJe5lFz7yszFkwqm5HK8dhGXmqe5zo0")
-chat = client.chats.create(model="gemini-2.0-flash")
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 chat_sessions = {}
 

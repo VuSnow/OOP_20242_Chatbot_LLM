@@ -4,7 +4,12 @@ from chat_message import ChatMessage
 from google import genai
 from google.genai import types
 
-client = genai.Client(api_key="AIzaSyDUkJe5lFz7yszFkwqm5HK8dhGXmqe5zo0")
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
+
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def generate_title(prompt:str):
     prompt = (
