@@ -5,8 +5,9 @@ import java.sql.SQLException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import common.exception.AuthenticateException;
+import dao.user.UserDAO;
 import entity.user.User;
-import entity.user.UserDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -73,16 +74,15 @@ public class LoginFormHandler implements Initializable {
 
         try {
             User user = this.userService.authenticate(enteredUsername, enteredPassword);
-            if (user == null) {
-                showError("Wrong username or password");
-            } else if (user.isBan()) {
-                showError("Your account has been banned");
-            } else {
-                redirectToMainScreen(event, user);
-            }
+            this.redirectToMainScreen(event, user);
         } catch (SQLException e) {
             e.printStackTrace();
             showError("Database error. Please try again later.");
+        } catch (AuthenticateException e) {
+//        	e.printStackTrace();
+        	showError(e.getMessage());
+        } catch (IllegalArgumentException e) {
+        	showError(e.getMessage());
         }
     }
 

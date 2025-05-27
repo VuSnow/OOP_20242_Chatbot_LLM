@@ -4,8 +4,8 @@ import java.sql.*;
 import java.util.regex.Pattern;
 
 import common.exception.*;
+import dao.user.UserDAO;
 import entity.user.User;
-import entity.user.UserDAO;
 
 public class UserService {
     private final UserDAO userDAO;
@@ -16,13 +16,18 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
-    public User authenticate(String username, String password) throws SQLException {
+    public User authenticate(String username, String password) throws SQLException, AuthenticateException {
         if (username == null || username.isEmpty())
             throw new IllegalArgumentException("Username must not be empty");
         if (password == null || password.isEmpty())
             throw new IllegalArgumentException("Password must not be empty");
-
-        return this.userDAO.findByUsernameAndPassword(username, password);
+        
+        User user = this.userDAO.findByUsernameAndPassword(username, password);
+        if (user == null) {
+        	throw new AuthenticateException();
+        }
+        
+        return user;
     }
 
     public void validateForSignup(User user, String confirmPassword)

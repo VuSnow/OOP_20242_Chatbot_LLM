@@ -8,6 +8,9 @@ import java.util.UUID;
 
 import org.json.JSONObject;
 
+import client.LLMClient;
+import client.LLMClientFactory;
+
 import java.time.LocalDateTime;
 
 import entity.conversation.Conversation;
@@ -31,8 +34,6 @@ import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import service.chat.ChatService;
-import service.client.LLMClient;
-import service.client.LLMClientFactory;
 import utils.Configs;
 
 public class MainScreenHandler implements Initializable{

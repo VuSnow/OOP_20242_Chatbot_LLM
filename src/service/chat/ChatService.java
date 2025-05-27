@@ -1,22 +1,15 @@
 package service.chat;
-
-import entity.conversation.*;
-import entity.message.*;
 import entity.conversation.Conversation;
 import entity.message.ChatMessage;
 //import util.LLMClient;
 import entity.user.User;
-
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
+
+import dao.conversation.ConversationDAO;
+import dao.message.ChatMessageDAO;
 import data.ConnectDatabase;
 
 public class ChatService {
